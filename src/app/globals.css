@@ -1,0 +1,51 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: dark;
+  --color-bg: #0a0a0c;
+  --color-bg-alt: #0f1f33;
+  --color-bg-alt-2: #16304d;
+  --color-surface: #12212f;
+  --color-border: #24384a;
+  --color-text: #f4efe6;
+  --color-text-muted: #b7c2cc;
+  --color-teal: #3aa3b8;
+  --color-teal-strong: #5fc1d4;
+  --color-gold: #e3b673;
+  --color-gold-strong: #f2d9ad;
+}
+
+@theme inline {
+  --color-bg: var(--color-bg);
+  --color-bg-alt: var(--color-bg-alt);
+  --color-bg-alt-2: var(--color-bg-alt-2);
+  --color-surface: var(--color-surface);
+  --color-border: var(--color-border);
+  --color-text: var(--color-text);
+  --color-text-muted: var(--color-text-muted);
+  --color-teal: var(--color-teal);
+  --color-teal-strong: var(--color-teal-strong);
+  --color-gold: var(--color-gold);
+  --color-gold-strong: var(--color-gold-strong);
+  --font-sans: var(--font-roboto);
+  --font-condensed: var(--font-roboto-condensed);
+}
+
+* {
+  border-color: var(--color-border);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
+
+::selection {
+  background: var(--color-gold);
+  color: #14181c;
+}
