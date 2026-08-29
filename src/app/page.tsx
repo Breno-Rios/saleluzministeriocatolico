@@ -1,7 +1,8 @@
 import Image from "next/image";
 import Header from "@/components/Header";
 import ContactForm from "@/components/ContactForm";
-import FolhetoViewer from "@/components/FolhetoViewerClient";
+import FolhetoSection from "@/components/FolhetoSection";
+import { FOLHETOS, checkFolhetoAvailability } from "@/lib/folhetos";
 
 const LANCAMENTO_YOUTUBE_ID = "niQTKVqYXLs";
 
@@ -41,7 +42,10 @@ const SYMBOLS = [
   },
 ];
 
-export default function Home() {
+export default async function Home() {
+  const availability = await checkFolhetoAvailability();
+  const availableFolhetos = FOLHETOS.filter((f) => availability[f.slug]);
+
   return (
     <div id="top" className="flex flex-1 flex-col">
       <Header />
@@ -275,18 +279,43 @@ export default function Home() {
 
       {/* FOLHETO DO DIA */}
       <section id="folheto" className="scroll-mt-28 px-6 py-20 sm:py-28">
-        <div className="mx-auto max-w-3xl text-center">
+        <div className="mx-auto max-w-2xl text-center">
           <h2 className="font-condensed text-3xl font-bold sm:text-4xl">
-            Folheto de Cantos do Dia
+            Folhetos do Dia
           </h2>
-          <p className="mx-auto mt-4 max-w-xl text-(--color-text-muted)">
-            O folheto de músicas disponível para acompanhar durante a
-            celebração.
-          </p>
+          {availability.missa && availability.cantos && (
+            <p className="mx-auto mt-4 max-w-xl text-(--color-text-muted)">
+              O folheto da missa e o de músicas, disponíveis para acompanhar
+              durante a celebração.
+            </p>
+          )}
+          {availability.missa && !availability.cantos && (
+            <p className="mx-auto mt-4 max-w-xl text-(--color-text-muted)">
+              O folheto da missa, disponível para acompanhar durante a
+              celebração.
+            </p>
+          )}
+          {!availability.missa && availability.cantos && (
+            <p className="mx-auto mt-4 max-w-xl text-(--color-text-muted)">
+              O folheto de músicas, disponível para acompanhar durante a
+              celebração.
+            </p>
+          )}
+        </div>
 
-          <div className="mt-10">
-            <FolhetoViewer />
-          </div>
+        <div className="mt-10">
+          {availableFolhetos.length > 0 ? (
+            <FolhetoSection folhetos={availableFolhetos} />
+          ) : (
+            <div className="mx-auto max-w-md rounded-2xl border border-(--color-border) bg-(--color-surface) p-10 text-center">
+              <p className="font-condensed text-xl font-bold text-(--color-gold)">
+                Folheto indisponível
+              </p>
+              <p className="mt-2 text-sm text-(--color-text-muted)">
+                O folheto do dia é publicado antes de cada celebração.
+              </p>
+            </div>
+          )}
         </div>
       </section>
 

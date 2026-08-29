@@ -1,23 +1,27 @@
 "use client";
 
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 
 const NAV_LINKS = [
   { href: "#historia", label: "Nossa História" },
   { href: "#lancamento", label: "Lançamento" },
-  { href: "#folheto", label: "Cantos do Dia" },
+  { href: "#folheto", label: "Folhetos do Dia" },
   { href: "#contato", label: "Contato" },
 ];
 
-export default function Header() {
+export default function Header({ showLogout = false }: { showLogout?: boolean }) {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
+  const isHome = pathname === "/";
+  const toHome = (anchor: string) => (isHome ? anchor : `/${anchor}`);
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 px-4">
       <div className="mx-auto max-w-6xl overflow-hidden rounded-2xl border border-(--color-border) bg-(--color-bg)/85 shadow-lg shadow-black/5 backdrop-blur">
         <div className="flex items-center justify-between gap-4 px-6 py-3">
-          <a href="#top" className="flex items-center gap-3">
+          <a href={isHome ? "#top" : "/"} className="flex items-center gap-3">
             <Image
               src="/images/logo-circle.jpg"
               alt="Logo Banda Sal & Luz"
@@ -35,7 +39,7 @@ export default function Header() {
             {NAV_LINKS.map((link) => (
               <a
                 key={link.href}
-                href={link.href}
+                href={toHome(link.href)}
                 className="text-sm font-medium text-(--color-text-muted) transition-colors hover:text-(--color-gold)"
               >
                 {link.label}
@@ -44,6 +48,16 @@ export default function Header() {
           </nav>
 
           <div className="flex items-center gap-2">
+            {showLogout && (
+              <form action="/api/admin/logout" method="POST">
+                <button
+                  type="submit"
+                  className="text-sm font-medium text-(--color-text-muted) underline underline-offset-4 transition-colors hover:text-(--color-gold)"
+                >
+                  Sair
+                </button>
+              </form>
+            )}
             <button
               type="button"
               aria-label="Abrir menu"
@@ -67,13 +81,23 @@ export default function Header() {
             {NAV_LINKS.map((link) => (
               <a
                 key={link.href}
-                href={link.href}
+                href={toHome(link.href)}
                 onClick={() => setOpen(false)}
                 className="rounded-lg px-2 py-2 text-sm font-medium text-(--color-text-muted) hover:bg-(--color-surface) hover:text-(--color-gold)"
               >
                 {link.label}
               </a>
             ))}
+            {showLogout && (
+              <form action="/api/admin/logout" method="POST">
+                <button
+                  type="submit"
+                  className="w-full rounded-lg px-2 py-2 text-left text-sm font-medium text-(--color-text-muted) hover:bg-(--color-surface) hover:text-(--color-gold)"
+                >
+                  Sair
+                </button>
+              </form>
+            )}
           </nav>
         )}
       </div>

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 const UNLOCK_COOKIE = "preview_access";
-const ALLOWED_PATHS = ["/em-breve", "/api/unlock"];
+const ALLOWED_PATHS = ["/em-breve", "/api/unlock", "/admin"];
 
 function isLaunched(): boolean {
   const launchAt = process.env.SITE_LAUNCH_AT;
@@ -15,6 +15,8 @@ export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   if (
     ALLOWED_PATHS.includes(pathname) ||
+    pathname.startsWith("/api/folheto") ||
+    pathname.startsWith("/api/admin") ||
     pathname.startsWith("/_next") ||
     pathname.startsWith("/images") ||
     pathname === "/icon.svg" ||

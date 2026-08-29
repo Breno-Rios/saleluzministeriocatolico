@@ -1,15 +1,20 @@
 import { list } from "@vercel/blob";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { DEFAULT_FOLHETO_SLUG, isFolhetoSlug, prefixForSlug } from "@/lib/folhetos";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   if (!process.env.BLOB_READ_WRITE_TOKEN) {
     return new NextResponse(null, { status: 404 });
   }
 
+  const tipoParam = request.nextUrl.searchParams.get("tipo");
+  const slug = isFolhetoSlug(tipoParam) ? tipoParam : DEFAULT_FOLHETO_SLUG;
+  const prefix = prefixForSlug(slug);
+
   try {
-    const { blobs } = await list({ prefix: "folheto-do-dia" });
+    const { blobs } = await list({ prefix });
     if (blobs.length === 0) {
       return new NextResponse(null, { status: 404 });
     }
@@ -26,7 +31,7 @@ export async function GET() {
     return new NextResponse(file.body, {
       headers: {
         "Content-Type": "application/pdf",
-        "Content-Disposition": 'inline; filename="folheto-do-dia.pdf"',
+        "Content-Disposition": `inline; filename="${prefix}.pdf"`,
         "Cache-Control": "no-store",
       },
     });

@@ -7,7 +7,6 @@ import "react-pdf/dist/Page/TextLayer.css";
 
 pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
 
-const PDF_URL = "/api/folheto";
 const MIN_SCALE = 0.7;
 const MAX_SCALE = 2;
 const SWIPE_MIN_DISTANCE = 50;
@@ -19,7 +18,13 @@ const DOCUMENT_OPTIONS = {
   standardFontDataUrl: "/pdfjs/standard_fonts/",
 };
 
-export default function FolhetoViewer() {
+export default function FolhetoViewer({
+  file,
+  showDownload = true,
+}: {
+  file: string | File;
+  showDownload?: boolean;
+}) {
   const stageRef = useRef<HTMLDivElement>(null);
   const [stageHeight, setStageHeight] = useState<number>();
   const [numPages, setNumPages] = useState<number>();
@@ -87,10 +92,14 @@ export default function FolhetoViewer() {
     return (
       <div className="rounded-2xl border border-(--color-border) bg-(--color-surface) p-10 text-center">
         <p className="font-condensed text-xl font-bold text-(--color-gold)">
-          Folheto ainda não disponível
+          {typeof file === "string"
+            ? "Folheto ainda não disponível"
+            : "Não foi possível abrir este arquivo"}
         </p>
         <p className="mt-2 text-sm text-(--color-text-muted)">
-          O folheto do dia é publicado antes de cada celebração.
+          {typeof file === "string"
+            ? "O folheto do dia é publicado antes de cada celebração."
+            : "Verifique se o PDF não está corrompido e tente novamente."}
         </p>
       </div>
     );
@@ -108,7 +117,7 @@ export default function FolhetoViewer() {
           className="group relative flex h-[68vh] max-h-[760px] min-h-[420px] select-none items-center justify-center overflow-auto p-4 [-webkit-tap-highlight-color:transparent]"
         >
           <Document
-            file={PDF_URL}
+            file={file}
             onLoadSuccess={({ numPages }) => {
               setNumPages(numPages);
               setPageNumber(1);
@@ -168,13 +177,15 @@ export default function FolhetoViewer() {
             <path d="M12 5v14M5 12h14" />
           </NavButton>
 
-          <a
-            href={PDF_URL}
-            download
-            className="rounded-full border border-(--color-border) px-4 py-2 text-sm font-medium transition-colors hover:border-(--color-gold) hover:text-(--color-gold)"
-          >
-            Baixar
-          </a>
+          {showDownload && typeof file === "string" && (
+            <a
+              href={file}
+              download
+              className="rounded-full border border-(--color-border) px-4 py-2 text-sm font-medium transition-colors hover:border-(--color-gold) hover:text-(--color-gold)"
+            >
+              Baixar
+            </a>
+          )}
         </div>
       </div>
 

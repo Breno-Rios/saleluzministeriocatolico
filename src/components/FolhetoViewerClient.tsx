@@ -11,6 +11,12 @@ const FolhetoViewer = dynamic(() => import("./FolhetoViewer"), {
   ),
 });
 
-export default function FolhetoViewerClient() {
-  return <FolhetoViewer />;
+export default function FolhetoViewerClient({
+  file,
+  showDownload = true,
+}: {
+  file: string | File;
+  showDownload?: boolean;
+}) {
+  return <FolhetoViewer file={file} showDownload={showDownload} />;
 }
