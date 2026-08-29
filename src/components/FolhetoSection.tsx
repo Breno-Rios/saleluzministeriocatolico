@@ -25,6 +25,9 @@ export default function FolhetoSection({
   folhetos: typeof FOLHETOS[number][];
 }) {
   const [selected, setSelected] = useState<FolhetoSlug>(folhetos[0].slug);
+  const [fullscreenSlug, setFullscreenSlug] = useState<FolhetoSlug | null>(
+    null,
+  );
 
   if (folhetos.length === 1) {
     return (
@@ -69,6 +72,19 @@ export default function FolhetoSection({
             <FolhetoViewerClient
               file={`/api/folheto?tipo=${folheto.slug}`}
               showDownload={false}
+              expanded={fullscreenSlug === folheto.slug}
+              onExpandedChange={(isOpen) => {
+                setFullscreenSlug(isOpen ? folheto.slug : null);
+                if (isOpen) setSelected(folheto.slug);
+              }}
+              switcher={folhetos.map((f) => ({
+                label: f.label,
+                active: f.slug === folheto.slug,
+                onSelect: () => {
+                  setSelected(f.slug);
+                  setFullscreenSlug(f.slug);
+                },
+              }))}
             />
           </div>
         ))}
