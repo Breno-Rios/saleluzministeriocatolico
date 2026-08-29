@@ -35,7 +35,7 @@ export default function Header({ showLogout = false }: { showLogout?: boolean })
                 className="rounded-full"
                 priority
               />
-              <span className="font-sans text-lg font-normal tracking-wide">
+              <span className="font-sans text-lg font-bold tracking-wide">
                 BANDA SAL &amp; LUZ
               </span>
             </a>
