@@ -17,6 +17,7 @@ export function proxy(request: NextRequest) {
     ALLOWED_PATHS.includes(pathname) ||
     pathname.startsWith("/api/folheto") ||
     pathname.startsWith("/api/admin") ||
+    pathname.startsWith("/api/contato") ||
     pathname.startsWith("/_next") ||
     pathname.startsWith("/images") ||
     pathname === "/icon.svg" ||

@@ -2,7 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 
-type Status = "idle" | "sending" | "sent";
+type Status = "idle" | "sending" | "sent" | "error";
 
 const CELEBRATION_OPTIONS = [
   "Casamento",
@@ -19,15 +19,23 @@ export default function ContactForm() {
   const [celebrationType, setCelebrationType] = useState("");
   const isOther = celebrationType === "Outro";
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setStatus("sending");
     const form = event.currentTarget;
-    setTimeout(() => {
+
+    try {
+      const response = await fetch("/api/contato", {
+        method: "POST",
+        body: new FormData(form),
+      });
+      if (!response.ok) throw new Error();
       setStatus("sent");
       setCelebrationType("");
       form.reset();
-    }, 900);
+    } catch {
+      setStatus("error");
+    }
   }
 
   if (status === "sent") {
@@ -125,10 +133,11 @@ export default function ContactForm() {
       >
         {status === "sending" ? "Enviando..." : "Solicitar orçamento"}
       </button>
-      <p className="text-xs text-(--color-text-muted)">
-        Formulário em modo de demonstração — o envio ainda não está conectado
-        a um e-mail ou serviço externo.
-      </p>
+      {status === "error" && (
+        <p className="text-center text-sm text-(--color-gold)">
+          Não foi possível enviar. Tente novamente em instantes.
+        </p>
+      )}
     </form>
   );
 }
