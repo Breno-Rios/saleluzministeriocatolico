@@ -26,6 +26,13 @@ function escapeHtml(value: FormDataEntryValue | null): string {
     .replace(/>/g, "&gt;");
 }
 
+function formatDataBr(value: FormDataEntryValue | null): string {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(value ?? ""));
+  if (!match) return "não informada";
+  const [, ano, mes, dia] = match;
+  return `${dia}/${mes}/${ano}`;
+}
+
 function renderEmailHtml({
   nome,
   telefone,
@@ -111,7 +118,7 @@ export async function POST(request: NextRequest) {
   const email = form.get("email");
   const tipoCelebracao = form.get("tipoCelebracao");
   const tipoCelebracaoOutro = form.get("tipoCelebracaoOutro");
-  const data = escapeHtml(form.get("data")) || "não informada";
+  const data = formatDataBr(form.get("data"));
   const mensagem = escapeHtml(form.get("mensagem")).replace(/\n/g, "<br>");
 
   const celebracao = escapeHtml(
