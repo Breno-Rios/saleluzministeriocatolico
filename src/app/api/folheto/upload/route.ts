@@ -1,10 +1,10 @@
 import { put } from "@vercel/blob";
 import { NextRequest, NextResponse } from "next/server";
 import { DEFAULT_FOLHETO_SLUG, isFolhetoSlug, prefixForSlug } from "@/lib/folhetos";
+import { requestUrl } from "@/lib/request-url";
 
 export async function POST(request: NextRequest) {
-  const url = request.nextUrl.clone();
-  url.pathname = "/admin";
+  const url = requestUrl(request, "/admin");
 
   const correct = process.env.FOLHETO_UPLOAD_PASSWORD;
   const authorized =
