@@ -90,8 +90,7 @@ export default function FolhetoViewer() {
           Folheto ainda não disponível
         </p>
         <p className="mt-2 text-sm text-(--color-text-muted)">
-          O folheto do dia é publicado antes de cada apresentação. Volte aqui
-          próximo ao evento.
+          O folheto do dia é publicado antes de cada celebração.
         </p>
       </div>
     );
