@@ -14,8 +14,11 @@ const CELEBRATION_OPTIONS = [
   "Casamento Comunitário",
 ];
 
+const DEFAULT_ERROR = "Não foi possível enviar. Tente novamente em instantes.";
+
 export default function ContactForm() {
   const [status, setStatus] = useState<Status>("idle");
+  const [errorMessage, setErrorMessage] = useState(DEFAULT_ERROR);
   const [celebrationType, setCelebrationType] = useState("");
   const isOther = celebrationType === "Outro";
 
@@ -29,11 +32,17 @@ export default function ContactForm() {
         method: "POST",
         body: new FormData(form),
       });
-      if (!response.ok) throw new Error();
+      if (!response.ok) {
+        const data = await response.json().catch(() => null);
+        setErrorMessage(data?.error || DEFAULT_ERROR);
+        setStatus("error");
+        return;
+      }
       setStatus("sent");
       setCelebrationType("");
       form.reset();
     } catch {
+      setErrorMessage(DEFAULT_ERROR);
       setStatus("error");
     }
   }
@@ -135,9 +144,19 @@ export default function ContactForm() {
       </button>
       {status === "error" && (
         <p className="text-center text-sm text-(--color-gold)">
-          Não foi possível enviar. Tente novamente em instantes.
+          {errorMessage}
         </p>
       )}
+
+      {/* Campo isca contra bots - invisível para pessoas de verdade */}
+      <div className="sr-only" aria-hidden="true">
+        <input
+          type="text"
+          name="empresa"
+          tabIndex={-1}
+          autoComplete="off"
+        />
+      </div>
     </form>
   );
 }

@@ -1,6 +1,24 @@
 import { Resend } from "resend";
 import { NextRequest, NextResponse } from "next/server";
 
+const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
+const RATE_LIMIT_MAX = 3;
+const submissionsByIp = new Map<string, number[]>();
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const recent = (submissionsByIp.get(ip) ?? []).filter(
+    (timestamp) => now - timestamp < RATE_LIMIT_WINDOW_MS,
+  );
+  recent.push(now);
+  submissionsByIp.set(ip, recent);
+  return recent.length > RATE_LIMIT_MAX;
+}
+
+function getClientIp(request: NextRequest): string {
+  return request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+}
+
 function escapeHtml(value: FormDataEntryValue | null): string {
   return String(value ?? "")
     .replace(/&/g, "&amp;")
@@ -16,7 +34,23 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  const ip = getClientIp(request);
+  if (isRateLimited(ip)) {
+    return NextResponse.json(
+      { ok: false, error: "Muitas tentativas. Aguarde alguns minutos." },
+      { status: 429 },
+    );
+  }
+
   const form = await request.formData();
+
+  // Campo isca: invisível para gente de verdade, mas bots costumam
+  // preencher todo campo que encontram. Se vier algo, finge sucesso
+  // sem enviar nada, pra não revelar ao bot que foi bloqueado.
+  if (form.get("empresa")) {
+    return NextResponse.json({ ok: true });
+  }
+
   const nome = escapeHtml(form.get("nome"));
   const telefone = escapeHtml(form.get("telefone"));
   const email = form.get("email");
