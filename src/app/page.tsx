@@ -19,6 +19,10 @@ const HISTORY_TIMELINE = [
     year: "2024",
     text: "Passamos a integrar o corpo de músicos da Paróquia Sagrada Família, na Ribeira, Ilha do Governador.",
   },
+  {
+    year: "2026",
+    text: "Escrevendo nossa história...",
+  },
 ];
 
 const SYMBOLS = [
