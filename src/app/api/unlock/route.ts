@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
   response.cookies.set("preview_access", correct, {
     httpOnly: true,
     sameSite: "lax",
-    secure: true,
+    secure: process.env.NODE_ENV === "production",
     path: "/",
   });
   return response;
