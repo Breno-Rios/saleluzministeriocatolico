@@ -32,7 +32,10 @@ export async function GET(request: NextRequest) {
       headers: {
         "Content-Type": "application/pdf",
         "Content-Disposition": `inline; filename="${prefix}.pdf"`,
-        "Cache-Control": "no-store",
+        // O conteúdo só muda quando alguém publica pelo painel admin - algo raro
+        // e nada urgente ao segundo. Cachear evita rebaixar o mesmo PDF do Blob
+        // a cada visita e a cada vez que os dois folhetos pré-carregam juntos.
+        "Cache-Control": "public, max-age=300, stale-while-revalidate=86400",
       },
     });
   } catch {
