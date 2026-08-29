@@ -4,6 +4,7 @@ import ContactForm from "@/components/ContactForm";
 import FolhetoSection from "@/components/FolhetoSection";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import { FOLHETOS, checkFolhetoAvailability } from "@/lib/folhetos";
+import { whatsAppUrl } from "@/lib/whatsapp";
 
 const LANCAMENTO_YOUTUBE_ID = "niQTKVqYXLs";
 
@@ -402,7 +403,7 @@ export default async function Home() {
           </a>
 
           <a
-            href="https://api.whatsapp.com/send?phone=5521997121099"
+            href={whatsAppUrl("")}
             target="_blank"
             rel="noopener noreferrer"
             aria-label="WhatsApp"

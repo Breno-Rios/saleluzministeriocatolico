@@ -1,11 +1,12 @@
-const WHATSAPP_NUMBER = "5521997121099";
+import { whatsAppUrl } from "@/lib/whatsapp";
+
 const WHATSAPP_MESSAGE =
   "Olá! Gostaria de solicitar um orçamento com a Banda Sal & Luz.";
 
 export default function WhatsAppButton() {
   return (
     <a
-      href={`https://api.whatsapp.com/send?phone=${WHATSAPP_NUMBER}&text=${encodeURIComponent(WHATSAPP_MESSAGE)}`}
+      href={whatsAppUrl(WHATSAPP_MESSAGE)}
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Conversar no WhatsApp"
