@@ -10,12 +10,12 @@ export async function POST(request: NextRequest) {
   if (!correct || senha !== correct) {
     url.pathname = "/em-breve";
     url.search = "?erro=1";
-    return NextResponse.redirect(url);
+    return NextResponse.redirect(url, 303);
   }
 
   url.pathname = "/";
   url.search = "";
-  const response = NextResponse.redirect(url);
+  const response = NextResponse.redirect(url, 303);
   response.cookies.set("preview_access", correct, {
     httpOnly: true,
     sameSite: "lax",
