@@ -52,7 +52,7 @@ export default async function Home() {
 
       {/* HERO */}
       <section
-        className="relative flex min-h-[100svh] flex-col overflow-hidden border-b border-(--color-border) px-6 pb-16 pt-24"
+        className="relative flex min-h-[100svh] flex-col overflow-hidden border-b border-(--color-border) px-6 pb-8 pt-24"
         style={{
           background:
             "radial-gradient(circle at 50% 20%, var(--color-bg-alt-2), var(--color-bg-alt) 45%, var(--color-bg) 85%)",
@@ -80,7 +80,7 @@ export default async function Home() {
           />
         </div>
 
-        <div className="relative z-10 mx-auto mt-auto flex max-w-3xl flex-col items-center gap-6 text-center">
+        <div className="relative z-10 mx-auto mt-auto flex min-h-[280px] max-w-3xl flex-col items-center gap-3 text-center md:min-h-0">
           <h1 className="font-sans text-4xl font-bold tracking-tight sm:text-6xl">
             BANDA SAL &amp; LUZ
           </h1>

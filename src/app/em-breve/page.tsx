@@ -1,5 +1,5 @@
-import Image from "next/image";
 import LaunchCountdown from "@/components/LaunchCountdown";
+import Image from "next/image";
 
 export default async function EmBreve({
   searchParams,
@@ -75,13 +75,15 @@ export default async function EmBreve({
         </details>
       </div>
 
-      <div className="relative z-10 -mt-6 mb-8 flex flex-col items-center gap-6">
-        <p className="font-sans text-4xl font-bold tracking-tight sm:text-6xl">
-          BANDA SAL &amp; LUZ
-        </p>
-        <p className="text-sm font-medium uppercase tracking-[0.3em] text-(--color-teal-strong)">
-          Ministério Católico
-        </p>
+      <div className="relative z-10 -mt-4 mb-8 flex flex-col items-center gap-6 md:-mt-6">
+        <div className="flex flex-col items-center gap-2">
+          <p className="font-sans text-4xl font-bold tracking-tight sm:text-6xl">
+            BANDA SAL &amp; LUZ
+          </p>
+          <p className="text-sm font-medium uppercase tracking-[0.3em] text-(--color-teal-strong)">
+            Ministério Católico
+          </p>
+        </div>
         <blockquote className="max-w-xl text-balance text-lg text-(--color-text-muted) sm:text-xl">
           &ldquo;Vós sois o sal da terra. Vós sois a luz do mundo.&rdquo;
           <footer className="mt-2 text-sm text-(--color-text-muted)/80">
