@@ -1,5 +1,6 @@
 import { put } from "@vercel/blob";
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { DEFAULT_FOLHETO_SLUG, isFolhetoSlug, prefixForSlug } from "@/lib/folhetos";
 import { requestUrl } from "@/lib/request-url";
 
@@ -38,6 +39,10 @@ export async function POST(request: NextRequest) {
     access: "public",
     addRandomSuffix: true,
   });
+
+  // A landing page ("/") é estática - sem isso, ela continuaria mostrando
+  // a disponibilidade do momento do último build/deploy.
+  revalidatePath("/");
 
   url.search = `?tipo=${slug}`;
   return NextResponse.redirect(url, 303);
