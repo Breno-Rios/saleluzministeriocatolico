@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { whatsAppUrl } from "@/lib/whatsapp";
 
 type Status = "idle" | "sending" | "sent" | "error";
 
@@ -16,9 +17,39 @@ const CELEBRATION_OPTIONS = [
 
 const DEFAULT_ERROR = "Não foi possível enviar. Tente novamente em instantes.";
 
+function formatDataBr(value: FormDataEntryValue | null): string {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(value ?? ""));
+  if (!match) return "não informada";
+  const [, ano, mes, dia] = match;
+  return `${dia}/${mes}/${ano}`;
+}
+
+function buildWhatsAppFallbackUrl(form: FormData): string {
+  const tipoCelebracao = form.get("tipoCelebracao");
+  const celebracao =
+    tipoCelebracao === "Outro" ? form.get("tipoCelebracaoOutro") : tipoCelebracao;
+
+  const message = [
+    "Olá! Tentei enviar um pedido de orçamento pelo site, mas não deu certo. Seguem meus dados:",
+    "",
+    `Nome: ${form.get("nome") || "não informado"}`,
+    `Telefone/WhatsApp: ${form.get("telefone") || "não informado"}`,
+    `E-mail: ${form.get("email") || "não informado"}`,
+    `Celebração: ${celebracao || "não informada"}`,
+    `Data prevista: ${formatDataBr(form.get("data"))}`,
+    "",
+    `Mensagem: ${form.get("mensagem") || ""}`,
+  ].join("\n");
+
+  return whatsAppUrl(message);
+}
+
 export default function ContactForm() {
   const [status, setStatus] = useState<Status>("idle");
   const [errorMessage, setErrorMessage] = useState(DEFAULT_ERROR);
+  const [fallbackWhatsAppUrl, setFallbackWhatsAppUrl] = useState<string | null>(
+    null,
+  );
   const [celebrationType, setCelebrationType] = useState("");
   const isOther = celebrationType === "Outro";
 
@@ -26,15 +57,17 @@ export default function ContactForm() {
     event.preventDefault();
     setStatus("sending");
     const form = event.currentTarget;
+    const formData = new FormData(form);
 
     try {
       const response = await fetch("/api/contato", {
         method: "POST",
-        body: new FormData(form),
+        body: formData,
       });
       if (!response.ok) {
         const data = await response.json().catch(() => null);
         setErrorMessage(data?.error || DEFAULT_ERROR);
+        setFallbackWhatsAppUrl(buildWhatsAppFallbackUrl(formData));
         setStatus("error");
         return;
       }
@@ -43,6 +76,7 @@ export default function ContactForm() {
       form.reset();
     } catch {
       setErrorMessage(DEFAULT_ERROR);
+      setFallbackWhatsAppUrl(buildWhatsAppFallbackUrl(formData));
       setStatus("error");
     }
   }
@@ -143,9 +177,19 @@ export default function ContactForm() {
         {status === "sending" ? "Enviando..." : "Solicitar orçamento"}
       </button>
       {status === "error" && (
-        <p className="text-center text-sm text-(--color-gold)">
-          {errorMessage}
-        </p>
+        <div className="grid justify-items-center gap-3 text-center">
+          <p className="text-sm text-(--color-gold)">{errorMessage}</p>
+          {fallbackWhatsAppUrl && (
+            <a
+              href={fallbackWhatsAppUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center rounded-full border border-(--color-border) px-5 py-2.5 text-sm font-medium text-(--color-text) transition-colors hover:border-(--color-gold) hover:text-(--color-gold)"
+            >
+              Enviar pelo WhatsApp em vez disso
+            </a>
+          )}
+        </div>
       )}
 
       {/* Campo isca contra bots - invisível para pessoas de verdade */}
