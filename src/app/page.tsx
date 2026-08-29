@@ -2,6 +2,7 @@ import Image from "next/image";
 import Header from "@/components/Header";
 import ContactForm from "@/components/ContactForm";
 import FolhetoSection from "@/components/FolhetoSection";
+import WhatsAppButton from "@/components/WhatsAppButton";
 import { FOLHETOS, checkFolhetoAvailability } from "@/lib/folhetos";
 
 const LANCAMENTO_YOUTUBE_ID = "niQTKVqYXLs";
@@ -325,6 +326,7 @@ export default async function Home() {
 
       {/* CONTATO */}
       <section id="contato" className="scroll-mt-28 px-6 py-20 sm:py-28">
+        <WhatsAppButton />
         <div className="mx-auto grid max-w-5xl gap-12 lg:grid-cols-[1fr_1.1fr] lg:items-start">
           <div>
             <h2 className="font-condensed text-3xl font-bold sm:text-4xl">
