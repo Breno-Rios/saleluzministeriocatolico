@@ -23,7 +23,7 @@ const HISTORY_TIMELINE = [
   },
   {
     year: "2026",
-    text: "Escrevendo nossa história...",
+    text: "Seguimos em caminhada, levando a Palavra adiante. Além da Santa Missa, passamos a cantar também em casamentos, bodas, shows e receptivos católicos. São mais oportunidades de anunciar o Evangelho pelas estradas da vida.",
   },
 ];
 
