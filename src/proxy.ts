@@ -1,7 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 
 const UNLOCK_COOKIE = "preview_access";
-const ALLOWED_PATHS = ["/em-breve", "/api/unlock", "/admin"];
+const ALLOWED_PATHS = [
+  "/em-breve",
+  "/api/unlock",
+  "/admin",
+  "/robots.txt",
+  "/sitemap.xml",
+];
 
 function isLaunched(): boolean {
   const launchAt = process.env.SITE_LAUNCH_AT;
