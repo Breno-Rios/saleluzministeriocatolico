@@ -3,7 +3,7 @@ import Header from "@/components/Header";
 import ContactForm from "@/components/ContactForm";
 import FolhetoSection from "@/components/FolhetoSection";
 import WhatsAppButton from "@/components/WhatsAppButton";
-import { FOLHETOS, checkFolhetoAvailability } from "@/lib/folhetos";
+import { FOLHETOS, fetchFolhetoUrls } from "@/lib/folhetos";
 import { whatsAppUrl } from "@/lib/whatsapp";
 
 const LANCAMENTO_YOUTUBE_ID = "niQTKVqYXLs";
@@ -49,8 +49,8 @@ const SYMBOLS = [
 ];
 
 export default async function Home() {
-  const availability = await checkFolhetoAvailability();
-  const availableFolhetos = FOLHETOS.filter((f) => availability[f.slug]);
+  const folhetoUrls = await fetchFolhetoUrls();
+  const availableFolhetos = FOLHETOS.filter((f) => folhetoUrls[f.slug]);
 
   return (
     <div id="top" className="flex flex-1 flex-col">
@@ -289,19 +289,19 @@ export default async function Home() {
           <h2 className="font-condensed text-3xl font-bold sm:text-4xl">
             Folhetos do Dia
           </h2>
-          {availability.missa && availability.cantos && (
+          {folhetoUrls.missa && folhetoUrls.cantos && (
             <p className="mx-auto mt-4 max-w-xl text-(--color-text-muted)">
               O folheto da missa e o de músicas, disponíveis para acompanhar
               durante a celebração.
             </p>
           )}
-          {availability.missa && !availability.cantos && (
+          {folhetoUrls.missa && !folhetoUrls.cantos && (
             <p className="mx-auto mt-4 max-w-xl text-(--color-text-muted)">
               O folheto da missa, disponível para acompanhar durante a
               celebração.
             </p>
           )}
-          {!availability.missa && availability.cantos && (
+          {!folhetoUrls.missa && folhetoUrls.cantos && (
             <p className="mx-auto mt-4 max-w-xl text-(--color-text-muted)">
               O folheto de músicas, disponível para acompanhar durante a
               celebração.
@@ -311,7 +311,7 @@ export default async function Home() {
 
         <div className="mt-10">
           {availableFolhetos.length > 0 ? (
-            <FolhetoSection folhetos={availableFolhetos} />
+            <FolhetoSection folhetos={availableFolhetos} urls={folhetoUrls} />
           ) : (
             <div className="mx-auto max-w-md rounded-2xl border border-(--color-border) bg-(--color-surface) p-10 text-center">
               <p className="font-condensed text-xl font-bold text-(--color-gold)">

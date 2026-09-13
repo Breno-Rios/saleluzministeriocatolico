@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { FOLHETOS, isFolhetoSlug, DEFAULT_FOLHETO_SLUG, type FolhetoSlug } from "@/lib/folhetos";
+import { FOLHETOS, isFolhetoSlug, DEFAULT_FOLHETO_SLUG, type FolhetoSlug, type FolhetoUrls } from "@/lib/folhetos";
 import FolhetoViewerClient from "./FolhetoViewerClient";
 import FolhetoUploadForm from "./FolhetoUploadForm";
 import DeleteFolhetoForm from "./DeleteFolhetoForm";
@@ -9,11 +9,11 @@ import DeleteFolhetoForm from "./DeleteFolhetoForm";
 type SelectedFiles = Partial<Record<FolhetoSlug, File | null>>;
 
 export default function AdminFolhetoPanel({
-  hasFolheto,
+  folhetoUrls,
   initialTipo,
   erro,
 }: {
-  hasFolheto: Record<FolhetoSlug, boolean>;
+  folhetoUrls: FolhetoUrls;
   initialTipo?: string;
   erro?: string;
 }) {
@@ -78,7 +78,7 @@ export default function AdminFolhetoPanel({
                   <p className="mb-3 text-center text-sm font-medium uppercase tracking-widest text-(--color-text-muted)">
                     Publicado atualmente
                   </p>
-                  {hasFolheto[folheto.slug] ? (
+                  {folhetoUrls[folheto.slug] ? (
                     <div className="relative">
                       <DeleteFolhetoForm
                         tipo={folheto.slug}
@@ -86,7 +86,7 @@ export default function AdminFolhetoPanel({
                         className="absolute -right-2 -top-2 z-10"
                       />
                       <FolhetoViewerClient
-                        file={`/api/folheto?tipo=${folheto.slug}`}
+                        file={folhetoUrls[folheto.slug]!}
                       />
                     </div>
                   ) : (

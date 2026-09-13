@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 import Link from "next/link";
 import Header from "@/components/Header";
 import AdminFolhetoPanel from "@/components/AdminFolhetoPanel";
-import { checkFolhetoAvailability, type FolhetoSlug } from "@/lib/folhetos";
+import { fetchFolhetoUrls, type FolhetoUrls } from "@/lib/folhetos";
 
 export default async function Admin({
   searchParams,
@@ -18,9 +18,7 @@ export default async function Admin({
   const authorized =
     !!correct && cookieStore.get("admin_access")?.value === correct;
 
-  const hasFolheto: Record<FolhetoSlug, boolean> = authorized
-    ? await checkFolhetoAvailability()
-    : ({} as Record<FolhetoSlug, boolean>);
+  const folhetoUrls: FolhetoUrls = authorized ? await fetchFolhetoUrls() : {};
 
   if (!authorized) {
     return (
@@ -75,7 +73,7 @@ export default async function Admin({
       <Header showLogout />
       <div className="flex flex-1 flex-col py-28">
         <AdminFolhetoPanel
-          hasFolheto={hasFolheto}
+          folhetoUrls={folhetoUrls}
           initialTipo={tipo}
           erro={erro}
         />

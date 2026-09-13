@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { FOLHETOS, type FolhetoSlug } from "@/lib/folhetos";
+import { FOLHETOS, type FolhetoSlug, type FolhetoUrls } from "@/lib/folhetos";
 import FolhetoViewerClient from "./FolhetoViewerClient";
 
 const ICONS: Record<FolhetoSlug, React.ReactNode> = {
@@ -21,8 +21,10 @@ const ICONS: Record<FolhetoSlug, React.ReactNode> = {
 
 export default function FolhetoSection({
   folhetos,
+  urls,
 }: {
   folhetos: typeof FOLHETOS[number][];
+  urls: FolhetoUrls;
 }) {
   const [selected, setSelected] = useState<FolhetoSlug>(folhetos[0].slug);
   const [fullscreenSlug, setFullscreenSlug] = useState<FolhetoSlug | null>(
@@ -33,7 +35,7 @@ export default function FolhetoSection({
     return (
       <div className="mx-auto w-full max-w-[560px]">
         <FolhetoViewerClient
-          file={`/api/folheto?tipo=${folhetos[0].slug}`}
+          file={urls[folhetos[0].slug]!}
           showDownload={false}
         />
       </div>
@@ -70,7 +72,7 @@ export default function FolhetoSection({
               {folheto.label}
             </p>
             <FolhetoViewerClient
-              file={`/api/folheto?tipo=${folheto.slug}`}
+              file={urls[folheto.slug]!}
               showDownload={false}
               expanded={fullscreenSlug === folheto.slug}
               onExpandedChange={(isOpen) => {
