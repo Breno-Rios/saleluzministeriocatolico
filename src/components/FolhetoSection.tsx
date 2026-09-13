@@ -1,8 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FOLHETOS, type FolhetoSlug, type FolhetoUrls } from "@/lib/folhetos";
 import FolhetoViewerClient from "./FolhetoViewerClient";
+
+// Coincide com o breakpoint md: do Tailwind, onde os dois folhetos passam a
+// aparecer lado a lado - abaixo disso só um está visível por vez.
+const DESKTOP = "(min-width: 48rem)";
 
 const ICONS: Record<FolhetoSlug, React.ReactNode> = {
   missa: (
@@ -19,6 +23,10 @@ const ICONS: Record<FolhetoSlug, React.ReactNode> = {
   ),
 };
 
+function Placeholder() {
+  return <p className="py-16 text-center text-sm text-(--color-text-muted)">Carregando folheto...</p>;
+}
+
 export default function FolhetoSection({
   folhetos,
   urls,
@@ -31,19 +39,78 @@ export default function FolhetoSection({
     null,
   );
 
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
+  // Acumula: um folheto que já foi montado nunca é desmontado, senão trocar
+  // de aba e voltar descartaria a página e o zoom em que o leitor estava.
+  const [mounted, setMounted] = useState<FolhetoSlug[]>([]);
+
+  // Cada PDF tem alguns megabytes, e a seção fica bem abaixo da dobra: montar
+  // o visualizador junto com a página fazia todo visitante baixar os arquivos
+  // inteiros mesmo sem nunca rolar até aqui.
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+    if (typeof IntersectionObserver === "undefined") {
+      setVisible(true);
+      return;
+    }
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          setVisible(true);
+          observer.disconnect();
+        }
+      },
+      // Começa a carregar um pouco antes de entrar na tela, para o PDF estar
+      // pronto quando a seção chegar.
+      { rootMargin: "400px" },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const query = window.matchMedia(DESKTOP);
+    const sync = () => setIsDesktop(query.matches);
+    sync();
+    query.addEventListener("change", sync);
+    return () => query.removeEventListener("change", sync);
+  }, []);
+
+  useEffect(() => {
+    if (!visible) return;
+    // No desktop os dois aparecem juntos, então os dois precisam carregar. No
+    // mobile só o selecionado está visível - o outro carrega quando (e se) o
+    // leitor trocar de aba.
+    const needed = isDesktop ? folhetos.map((f) => f.slug) : [selected];
+    setMounted((prev) => {
+      const merged = [...new Set([...prev, ...needed])];
+      return merged.length === prev.length ? prev : merged;
+    });
+  }, [visible, isDesktop, selected, folhetos]);
+
   if (folhetos.length === 1) {
     return (
-      <div className="mx-auto w-full max-w-[560px]">
-        <FolhetoViewerClient
-          file={urls[folhetos[0].slug]!}
-          showDownload={false}
-        />
+      <div ref={sectionRef} className="mx-auto w-full max-w-[560px]">
+        {visible ? (
+          <FolhetoViewerClient
+            file={urls[folhetos[0].slug]!}
+            showDownload={false}
+          />
+        ) : (
+          <Placeholder />
+        )}
       </div>
     );
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-4xl flex-col items-center gap-8">
+    <div
+      ref={sectionRef}
+      className="mx-auto flex w-full max-w-4xl flex-col items-center gap-8"
+    >
       <div className="flex items-center gap-3">
         {folhetos.map((folheto) => (
           <button
@@ -71,23 +138,27 @@ export default function FolhetoSection({
             <p className="mb-3 text-center text-xs font-medium uppercase tracking-widest text-(--color-text-muted)">
               {folheto.label}
             </p>
-            <FolhetoViewerClient
-              file={urls[folheto.slug]!}
-              showDownload={false}
-              expanded={fullscreenSlug === folheto.slug}
-              onExpandedChange={(isOpen) => {
-                setFullscreenSlug(isOpen ? folheto.slug : null);
-                if (isOpen) setSelected(folheto.slug);
-              }}
-              switcher={folhetos.map((f) => ({
-                label: f.label,
-                active: f.slug === folheto.slug,
-                onSelect: () => {
-                  setSelected(f.slug);
-                  setFullscreenSlug(f.slug);
-                },
-              }))}
-            />
+            {mounted.includes(folheto.slug) ? (
+              <FolhetoViewerClient
+                file={urls[folheto.slug]!}
+                showDownload={false}
+                expanded={fullscreenSlug === folheto.slug}
+                onExpandedChange={(isOpen) => {
+                  setFullscreenSlug(isOpen ? folheto.slug : null);
+                  if (isOpen) setSelected(folheto.slug);
+                }}
+                switcher={folhetos.map((f) => ({
+                  label: f.label,
+                  active: f.slug === folheto.slug,
+                  onSelect: () => {
+                    setSelected(f.slug);
+                    setFullscreenSlug(f.slug);
+                  },
+                }))}
+              />
+            ) : (
+              <Placeholder />
+            )}
           </div>
         ))}
       </div>
