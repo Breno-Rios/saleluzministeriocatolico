@@ -6,7 +6,7 @@ import { useState } from "react";
 
 const NAV_LINKS = [
   { href: "#historia", label: "Nossa História" },
-  { href: "#lancamento", label: "Lançamento" },
+  { href: "/musicas", label: "Músicas" },
   { href: "#folheto", label: "Folhetos do Dia" },
   { href: "#contato", label: "Contato" },
 ];
@@ -15,7 +15,10 @@ export default function Header({ showLogout = false }: { showLogout?: boolean })
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const isHome = pathname === "/";
-  const toHome = (anchor: string) => (isHome ? anchor : `/${anchor}`);
+  // Âncoras só funcionam na home; fora dela viram link para a seção lá.
+  // Rotas de verdade (/musicas) passam direto.
+  const toHome = (href: string) =>
+    href.startsWith("#") && !isHome ? `/${href}` : href;
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 px-4 py-3">
