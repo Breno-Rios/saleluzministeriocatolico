@@ -2,17 +2,16 @@ import { del, list } from "@vercel/blob";
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { DEFAULT_FOLHETO_SLUG, isFolhetoSlug, prefixForSlug } from "@/lib/folhetos";
+import { isAdminRequest } from "@/lib/admin-auth";
 import { requestUrl } from "@/lib/request-url";
 
 export async function POST(request: NextRequest) {
   const url = requestUrl(request, "/admin");
 
-  const correct = process.env.FOLHETO_UPLOAD_PASSWORD;
-  const authorized =
-    correct && request.cookies.get("admin_access")?.value === correct;
+  const authorized = isAdminRequest(request);
 
   if (!authorized) {
-    url.search = "?erro=senha";
+    url.search = "?erro=sessao";
     return NextResponse.redirect(url, 303);
   }
 
