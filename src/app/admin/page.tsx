@@ -1,7 +1,7 @@
-import { cookies } from "next/headers";
 import Link from "next/link";
 import Header from "@/components/Header";
 import AdminFolhetoPanel from "@/components/AdminFolhetoPanel";
+import { isAdmin } from "@/lib/admin-auth";
 import { fetchFolhetoUrls, type FolhetoUrls } from "@/lib/folhetos";
 
 export default async function Admin({
@@ -13,10 +13,7 @@ export default async function Admin({
   }>;
 }) {
   const { erro, tipo } = await searchParams;
-  const correct = process.env.FOLHETO_UPLOAD_PASSWORD;
-  const cookieStore = await cookies();
-  const authorized =
-    !!correct && cookieStore.get("admin_access")?.value === correct;
+  const authorized = await isAdmin();
 
   const folhetoUrls: FolhetoUrls = authorized ? await fetchFolhetoUrls() : {};
 
