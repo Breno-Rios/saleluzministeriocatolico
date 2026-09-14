@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { FOLHETOS, isFolhetoSlug, DEFAULT_FOLHETO_SLUG, type FolhetoSlug, type FolhetoUrls } from "@/lib/folhetos";
 import FolhetoViewerClient from "./FolhetoViewerClient";
@@ -28,6 +29,13 @@ export default function AdminFolhetoPanel({
         <h1 className="font-condensed text-3xl font-bold sm:text-4xl">
           Folheto do Dia
         </h1>
+
+        <Link
+          href="/admin/musicas"
+          className="mt-3 inline-block text-sm font-medium text-(--color-text-muted) underline underline-offset-4 transition-colors hover:text-(--color-gold)"
+        >
+          Gerenciar músicas
+        </Link>
 
         <nav className="mt-6 grid gap-2">
           {FOLHETOS.map((folheto) => (
