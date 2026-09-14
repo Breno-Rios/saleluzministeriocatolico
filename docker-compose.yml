@@ -1,0 +1,40 @@
+# Banco de desenvolvimento para o catálogo de músicas (/musicas).
+#
+# O driver do Neon fala HTTP, não o protocolo do Postgres - por isso o proxy:
+# ele recebe as queries do driver e repassa ao Postgres daqui. Assim o código
+# da aplicação é exatamente o mesmo em dev e em produção, sem um segundo
+# cliente só para rodar local.
+#
+#   docker compose up -d
+#   npm run db:migrate
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: saleluz
+    ports:
+      # 5432 do host costuma estar ocupada por outro projeto; o proxy fala com
+      # o banco pela rede interna, então esta porta só serve para psql/DBeaver.
+      - "55432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  neon-proxy:
+    image: ghcr.io/timowilhelm/local-neon-http-proxy:main
+    environment:
+      PG_CONNECTION_STRING: postgres://postgres:postgres@db:5432/saleluz
+    ports:
+      - "4444:4444"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:

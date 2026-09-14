@@ -1,4 +1,4 @@
-import { neon } from "@neondatabase/serverless";
+import { neon, neonConfig } from "@neondatabase/serverless";
 
 /**
  * Cliente Postgres (Neon) sobre HTTP.
@@ -22,6 +22,22 @@ export function db() {
   if (!process.env.DATABASE_URL) {
     throw new Error("DATABASE_URL não configurada.");
   }
-  client ??= neon(process.env.DATABASE_URL);
+  client ??= neon(usarProxyLocal(process.env.DATABASE_URL));
   return client;
+}
+
+/**
+ * Em produção o driver fala com o endpoint HTTP do próprio Neon. Apontando
+ * DATABASE_URL para um Postgres local (docker compose), quem responde é o
+ * proxy que sobe junto - ver docker-compose.yml.
+ *
+ * Os scripts de migration e seed repetem esta regra: rodam fora do bundle do
+ * Next e não conseguem importar este módulo.
+ */
+function usarProxyLocal(connectionString: string): string {
+  const { hostname } = new URL(connectionString);
+  if (hostname === "localhost" || hostname === "127.0.0.1") {
+    neonConfig.fetchEndpoint = `http://${hostname}:4444/sql`;
+  }
+  return connectionString;
 }

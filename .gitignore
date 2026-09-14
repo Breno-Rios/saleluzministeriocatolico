@@ -44,3 +44,8 @@ next-env.d.ts
 # pdf.js assets (copiados de node_modules por scripts/copy-pdf-worker.mjs)
 /public/pdf.worker.min.mjs
 /public/pdfjs/
+
+# dados de desenvolvimento (catálogo fictício de músicas e o que o consome)
+db/musicas-dev.json
+src/lib/musicas-mock.ts
+scripts/db-seed.mjs

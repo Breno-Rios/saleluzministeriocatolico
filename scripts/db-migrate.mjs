@@ -1,7 +1,7 @@
 // Aplica os .sql de db/migrations em ordem, uma única vez cada, registrando o
 // que já rodou em schema_migrations. Rode com `npm run db:migrate` - em
 // produção, apontando DATABASE_URL para o banco da Vercel.
-import { neon } from "@neondatabase/serverless";
+import { neon, neonConfig } from "@neondatabase/serverless";
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -13,6 +13,13 @@ if (!process.env.DATABASE_URL) {
     "DATABASE_URL não definida. Copie a connection string do Neon para .env.local.",
   );
   process.exit(1);
+}
+
+// Mesma regra de src/lib/db.ts: DATABASE_URL local fala com o proxy HTTP que
+// sobe no docker compose, e não com o endpoint do Neon.
+const { hostname } = new URL(process.env.DATABASE_URL);
+if (hostname === "localhost" || hostname === "127.0.0.1") {
+  neonConfig.fetchEndpoint = `http://${hostname}:4444/sql`;
 }
 
 const sql = neon(process.env.DATABASE_URL);
