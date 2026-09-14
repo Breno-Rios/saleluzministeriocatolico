@@ -1,7 +1,8 @@
-import { cookies } from "next/headers";
 import Link from "next/link";
 import Header from "@/components/Header";
 import AdminFolhetoPanel from "@/components/AdminFolhetoPanel";
+import AdminLogin from "@/components/AdminLogin";
+import { isAdmin, loginDeDesenvolvimento } from "@/lib/admin-auth";
 import { fetchFolhetoUrls, type FolhetoUrls } from "@/lib/folhetos";
 
 export default async function Admin({
@@ -13,10 +14,7 @@ export default async function Admin({
   }>;
 }) {
   const { erro, tipo } = await searchParams;
-  const correct = process.env.FOLHETO_UPLOAD_PASSWORD;
-  const cookieStore = await cookies();
-  const authorized =
-    !!correct && cookieStore.get("admin_access")?.value === correct;
+  const authorized = await isAdmin();
 
   const folhetoUrls: FolhetoUrls = authorized ? await fetchFolhetoUrls() : {};
 
@@ -30,32 +28,20 @@ export default async function Admin({
               Área restrita
             </h1>
             <p className="mt-2 text-(--color-text-muted)">
-              Entre com a senha para gerenciar o Folheto do Dia.
+              Entre com sua conta Google para gerenciar o site.
             </p>
           </div>
 
-          <form
-            action="/api/admin/login"
-            method="POST"
-            className="grid w-full max-w-xs gap-3"
-          >
-            <input
-              type="password"
-              name="senha"
-              placeholder="Senha"
-              required
-              className="rounded-lg border border-(--color-border) bg-transparent px-4 py-3 text-center text-(--color-text) outline-none transition-colors placeholder:text-(--color-text-muted) focus:border-(--color-teal)"
-            />
-            <button
-              type="submit"
-              className="rounded-full bg-(--color-gold) px-6 py-3 font-condensed font-bold text-[#14181c] transition-colors hover:bg-(--color-gold-strong)"
-            >
-              Entrar
-            </button>
-            {erro === "senha" && (
-              <p className="text-sm text-(--color-gold)">Senha incorreta.</p>
-            )}
-          </form>
+          {erro === "sessao" && (
+            <p className="text-sm text-(--color-gold)">
+              Sua sessão expirou. Entre novamente.
+            </p>
+          )}
+
+          <AdminLogin
+            clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}
+            loginDeDesenvolvimento={loginDeDesenvolvimento()}
+          />
 
           <Link
             href="/"
