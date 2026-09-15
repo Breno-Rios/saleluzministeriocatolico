@@ -11,10 +11,18 @@ export default function MusicaCard({
   musica,
   onSelect,
   className = "",
+  ansioso = false,
 }: {
   musica: Musica;
   onSelect: (musica: Musica) => void;
   className?: string;
+  /**
+   * Carrega a capa sem esperar a rolagem. Vale para o card da música em
+   * destaque: ele repete a capa do bloco do topo, que já vem com priority, e
+   * marcar a mesma URL como lazy aqui fazia o Next avisar que o LCP da página
+   * estava sem prioridade.
+   */
+  ansioso?: boolean;
 }) {
   const capa = capaDaMusica(musica);
 
@@ -33,7 +41,7 @@ export default function MusicaCard({
           alt=""
           fill
           unoptimized={!capaOtimizavel(capa)}
-          loading="lazy"
+          loading={ansioso ? "eager" : "lazy"}
           className="object-cover"
           sizes="(min-width: 640px) 256px, 33vw"
         />

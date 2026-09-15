@@ -7,9 +7,11 @@ import type { Musica, Prateleira } from "@/lib/musicas";
 export default function PrateleiraMusicas({
   prateleira,
   onSelect,
+  destaqueId,
 }: {
   prateleira: Prateleira;
   onSelect: (musica: Musica) => void;
+  destaqueId?: number;
 }) {
   const trilho = useRef<HTMLDivElement>(null);
   const [inicio, setInicio] = useState(true);
@@ -64,6 +66,7 @@ export default function PrateleiraMusicas({
               key={musica.id}
               musica={musica}
               onSelect={onSelect}
+              ansioso={musica.id === destaqueId}
               // Cabem 3 cards mais uma faixa do quarto, para ficar claro que a
               // prateleira continua para o lado: 28px de recuo do trilho + 3
               // intervalos de 12px + os ~14px que sobram do quarto card dão os
