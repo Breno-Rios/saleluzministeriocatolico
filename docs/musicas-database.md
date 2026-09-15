@@ -3,8 +3,8 @@
 A página `/musicas` mostra o repertório em prateleiras por gênero, no formato
 de vitrine da Netflix: cada card abre um painel com o vídeo do YouTube
 embutido, descrição, créditos e — quando houver link cadastrado — o botão para
-a cifra. Tudo vem de um Postgres; o cadastro é feito em `/admin/musicas`, com a
-mesma senha do Folheto do Dia (`FOLHETO_UPLOAD_PASSWORD`).
+a cifra. Tudo vem de um Postgres; o cadastro é feito em `/admin/musicas`, com o
+mesmo login do Folheto do Dia — conta Google, ver `docs/admin-login.md`.
 
 ## Desenvolvimento
 
