@@ -116,7 +116,8 @@ export default function MusicasCatalogo({
 
   return (
     <>
-      {!filtrando && (
+      {/* O destaque fica de pé mesmo com filtro ativo: é a vitrine da banda, e
+          sumir a cada clique num gênero deixava a página começando do nada. */}
       <section className="relative mb-4 overflow-hidden border-b border-(--color-border)">
         <div className="absolute inset-0">
           <Image
@@ -156,13 +157,8 @@ export default function MusicasCatalogo({
           </button>
         </div>
       </section>
-      )}
 
-      <div
-        className={`mx-auto max-w-6xl px-7 sm:px-6 ${
-          filtrando ? "pt-28 sm:pt-32" : "pt-2"
-        }`}
-      >
+      <div className="mx-auto max-w-6xl px-7 pt-2 sm:px-6">
         <BuscaMusicas
           consulta={consulta}
           onConsulta={setConsulta}
