@@ -10,6 +10,7 @@ import {
   useRef,
   useState,
 } from "react";
+import CampoCifra from "./CampoCifra";
 import ConfirmDialog from "./ConfirmDialog";
 import {
   excluirGenero,
@@ -337,10 +338,15 @@ function FormMusica({
             <input
               name="cifra_url"
               defaultValue={musica?.cifraUrl ?? ""}
-              placeholder="https://..."
+              placeholder="Só se a cifra morar em outro site"
               className={CAMPO}
             />
           </label>
+        </div>
+
+        <div className="grid gap-1.5">
+          <span className={ROTULO}>Cifra (opcional)</span>
+          <CampoCifra valor={musica?.cifra ?? ""} />
         </div>
 
         <label className="grid gap-1.5">
