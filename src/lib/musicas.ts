@@ -16,6 +16,14 @@ export type Musica = {
   descricao: string | null;
   creditos: string | null;
   cifraUrl: string | null;
+  /**
+   * Texto da cifra. Só vem preenchido no painel do admin: na listagem pública
+   * viajaria para todo visitante dentro do payload da página, e alguns KB por
+   * música multiplicados pelo catálogo inteiro pesariam em quem nunca vai abrir
+   * uma cifra. Lá a página usa `temCifra` e busca o texto ao clicar.
+   */
+  cifra: string | null;
+  temCifra: boolean;
   ano: number | null;
   publicada: boolean;
   /** Ocupa o topo de /musicas; no máximo uma música por vez. */
@@ -104,6 +112,7 @@ type LinhaMusica = {
   descricao: string | null;
   creditos: string | null;
   cifra_url: string | null;
+  tem_cifra: boolean;
   ano: number | null;
   destaque: boolean;
 };
@@ -129,7 +138,8 @@ export async function fetchPrateleiras(): Promise<Prateleira[]> {
       select g.id as genero_id, g.slug as genero_slug, g.nome as genero_nome,
              g.ordem as genero_ordem,
              m.id, m.slug, m.titulo, m.youtube_id, m.imagem_url, m.descricao,
-             m.creditos, m.cifra_url, m.ano, m.destaque
+             m.creditos, m.cifra_url, (m.cifra is not null) as tem_cifra,
+             m.ano, m.destaque
       from generos g
       join musica_generos mg on mg.genero_id = g.id
       join musicas m on m.id = mg.musica_id and m.publicada
@@ -176,6 +186,8 @@ export async function fetchPrateleiras(): Promise<Prateleira[]> {
       descricao: linha.descricao,
       creditos: linha.creditos,
       cifraUrl: linha.cifra_url,
+      cifra: null,
+      temCifra: linha.tem_cifra,
       ano: linha.ano,
       publicada: true,
       destaque: linha.destaque,
@@ -199,7 +211,7 @@ export async function fetchMusicas(): Promise<Musica[]> {
 
   const linhas = (await db()`
     select m.id, m.slug, m.titulo, m.youtube_id, m.imagem_url, m.descricao,
-           m.creditos, m.cifra_url, m.ano, m.destaque, m.publicada,
+           m.creditos, m.cifra_url, m.cifra, m.ano, m.destaque, m.publicada,
            coalesce(
              json_agg(json_build_object('slug', g.slug, 'nome', g.nome)
                       order by g.ordem, g.nome)
@@ -211,7 +223,8 @@ export async function fetchMusicas(): Promise<Musica[]> {
     left join generos g on g.id = mg.genero_id
     group by m.id
     order by m.titulo
-  `) as (LinhaMusica & {
+  `) as (Omit<LinhaMusica, "tem_cifra"> & {
+    cifra: string | null;
     publicada: boolean;
     generos: { slug: string; nome: string }[];
   })[];
@@ -225,6 +238,8 @@ export async function fetchMusicas(): Promise<Musica[]> {
     descricao: linha.descricao,
     creditos: linha.creditos,
     cifraUrl: linha.cifra_url,
+    cifra: linha.cifra,
+    temCifra: !!linha.cifra,
     ano: linha.ano,
     publicada: linha.publicada,
     destaque: linha.destaque,
