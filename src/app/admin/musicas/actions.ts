@@ -79,6 +79,7 @@ export async function salvarMusica(
     descricao: textoOuNulo(formData.get("descricao")),
     creditos: textoOuNulo(formData.get("creditos")),
     cifraUrl: textoOuNulo(formData.get("cifra_url")),
+    cifra: textoOuNulo(formData.get("cifra")),
     ano: Number(formData.get("ano")) || null,
     publicada: formData.get("publicada") === "on",
     destaque: formData.get("destaque") === "on",
@@ -106,6 +107,7 @@ export async function salvarMusica(
           descricao = ${dados.descricao},
           creditos = ${dados.creditos},
           cifra_url = ${dados.cifraUrl},
+          cifra = ${dados.cifra},
           ano = ${dados.ano},
           publicada = ${dados.publicada},
           destaque = ${dados.destaque},
@@ -117,11 +119,11 @@ export async function salvarMusica(
       const [criada] = (await sql`
         insert into musicas
           (slug, titulo, youtube_id, imagem_url, descricao, creditos, cifra_url,
-           ano, publicada, destaque)
+           cifra, ano, publicada, destaque)
         values
           (${slug}, ${dados.titulo}, ${dados.youtubeId}, ${dados.imagemUrl},
-           ${dados.descricao}, ${dados.creditos}, ${dados.cifraUrl}, ${dados.ano},
-           ${dados.publicada}, ${dados.destaque})
+           ${dados.descricao}, ${dados.creditos}, ${dados.cifraUrl}, ${dados.cifra},
+           ${dados.ano}, ${dados.publicada}, ${dados.destaque})
         returning id
       `) as { id: number }[];
       musicaId = criada.id;

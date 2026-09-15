@@ -177,6 +177,7 @@ export default function MusicasCatalogo({
               key={musica.id}
               musica={musica}
               onSelect={abrir}
+              ansioso={musica.id === destaque.id}
               className="w-full"
             />
           ))}
@@ -188,6 +189,7 @@ export default function MusicasCatalogo({
               key={prateleira.genero.slug}
               prateleira={prateleira}
               onSelect={abrir}
+              destaqueId={destaque.id}
             />
           ))}
         </div>

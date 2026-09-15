@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import CifraViewer from "./CifraViewer";
 import { capaDaMusica, capaOtimizavel, urlDoVideo, type Musica } from "@/lib/musicas";
 
 export default function MusicaDetalhe({
@@ -12,6 +13,7 @@ export default function MusicaDetalhe({
   onClose: () => void;
 }) {
   const [tocando, setTocando] = useState(false);
+  const [vendoCifra, setVendoCifra] = useState(false);
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
@@ -137,7 +139,18 @@ export default function MusicaDetalhe({
               Assistir no YouTube
             </a>
 
-            {musica.cifraUrl ? (
+            {/* A cifra embutida ganha do link: é a que transpõe. O link
+                externo continua valendo para quem só tem a cifra em outro
+                site. */}
+            {musica.temCifra ? (
+              <button
+                type="button"
+                onClick={() => setVendoCifra((v) => !v)}
+                className="rounded-full bg-(--color-gold) px-5 py-2.5 font-condensed text-sm font-bold text-[#14181c] transition-colors hover:bg-(--color-gold-strong)"
+              >
+                {vendoCifra ? "Esconder cifra" : "Ver cifra"}
+              </button>
+            ) : musica.cifraUrl ? (
               <a
                 href={musica.cifraUrl}
                 target="_blank"
@@ -152,6 +165,12 @@ export default function MusicaDetalhe({
               </span>
             )}
           </div>
+
+          {musica.temCifra && vendoCifra && (
+            <div className="mt-6">
+              <CifraViewer slug={musica.slug} />
+            </div>
+          )}
         </div>
       </div>
     </div>
