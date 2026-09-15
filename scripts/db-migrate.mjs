@@ -17,10 +17,17 @@ if (!process.env.DATABASE_URL) {
 
 // Mesma regra de src/lib/db.ts: DATABASE_URL local fala com o proxy HTTP que
 // sobe no docker compose, e não com o endpoint do Neon.
-const { hostname } = new URL(process.env.DATABASE_URL);
+const alvo = new URL(process.env.DATABASE_URL);
+const { hostname } = alvo;
 if (hostname === "localhost" || hostname === "127.0.0.1") {
   neonConfig.fetchEndpoint = `http://${hostname}:4444/sql`;
 }
+
+// Dizer em qual banco está mexendo é a diferença entre migrar produção e
+// achar que migrou: uma connection string colada sem aspas é partida pelo
+// shell no "&" dos parâmetros, o script não recebe DATABASE_URL nenhuma, cai
+// no .env.local e responde "banco já está em dia" - sobre o banco errado.
+console.log(`Banco: ${hostname}${alvo.pathname}`);
 
 const sql = neon(process.env.DATABASE_URL);
 
